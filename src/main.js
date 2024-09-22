@@ -1,4 +1,4 @@
-document.querySelector('#root').innerHTML = `
+document.querySelector("#root").innerHTML = `
 <div class="bg-gray-100 min-h-screen flex justify-center">
     <div class="max-w-md w-full">
       <header class="bg-blue-600 text-white p-4 sticky top-0">
@@ -7,9 +7,9 @@ document.querySelector('#root').innerHTML = `
 
       <nav class="bg-white shadow-md p-2 sticky top-14">
         <ul class="flex justify-around">
-          <li><a href="./main.html" class="text-blue-600">홈</a></li>
-          <li><a href="./profile.html" class="text-gray-600">프로필</a></li>
-          <li><a href="#" class="text-gray-600">로그아웃</a></li>
+          <li><a href="/" onClick="route(event)" class="text-blue-600">홈</a></li>
+          <li><a href="/profile" onClick="route(event)" class="text-gray-600">프로필</a></li>
+          <li><a href="/login" onClick="route(event)" class="text-gray-600">로그아웃</a></li>
         </ul>
       </nav>
 
@@ -109,3 +109,29 @@ document.querySelector('#root').innerHTML = `
     </div>
   </div>
 `;
+
+const route = (event) => {
+  event = event || window.event;
+  event.preventDefault();
+  window.history.pushState({}, "", event.target.href);
+  handleLocation();
+};
+
+const routes = {
+  "/": "templates/main.html",
+  "/profile": "templates/profile.html",
+  "/login": "templates/login.html",
+  404: "templates/error.html",
+};
+
+const handleLocation = async () => {
+  const path = window.location.pathname;
+  const route = routes[path] || routes[404];
+  const html = await fetch(route).then((data) => data.text());
+  document.getElementById("root").innerHTML = html;
+};
+
+window.onpopstate = handleLocation;
+window.route = route;
+
+handleLocation();
